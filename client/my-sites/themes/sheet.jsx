@@ -38,6 +38,7 @@ export const ThemeSheet = React.createClass( {
 		description: React.PropTypes.string,
 		descriptionLong: React.PropTypes.string,
 		supportDocumentation: React.PropTypes.string,
+		taxonomies: React.PropTypes.object,
 	},
 
 	onBackClick() {
