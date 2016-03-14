@@ -7,13 +7,15 @@ require( 'lib/react-test-env-setup' )();
 var rewire = require( 'rewire' ),
 	chai = require( 'chai' ),
 	assert = require( 'chai' ).assert,
+	expect = require( 'chai' ).expect,
 	sinon = require( 'sinon' ),
 	mockery = require( 'mockery' );
 
 /**
  * Internal dependencies
  */
-var Dispatcher = require( 'dispatcher' ),
+var useMockery = require( 'test/helpers/use-mockery' ),
+	Dispatcher = require( 'dispatcher' ),
 	TagStore = require( '../tag-store' ),
 	data = require( './data' ),
 	TermsConstants = require( '../constants' );
@@ -45,11 +47,12 @@ var ActionTypes = TermsConstants.action,
 		found: 2
 	};
 
-describe( 'TermActions', function() {
+describe.only( 'TermActions', function() {
 	var TermActions, sandbox, getCategories, getTags, addCategory;
 
+	useMockery();
+
 	before( function() {
-		mockery.enable( { warnOnReplace: false, warnOnUnregistered: false } );
 		mockery.registerMock( 'lib/wp', {
 			site: function() {
 				return {
@@ -67,7 +70,7 @@ describe( 'TermActions', function() {
 	} );
 
 	beforeEach( function() {
-		TermActions.__set__( 'temporaryIdCount', 0 );
+		this.revertTermActions = TermActions.__set__( 'temporaryIdCount', 0 );
 		sandbox = sinon.sandbox.create();
 
 		getCategories = sandbox.stub().callsArgWithAsync( 1, null, CATEGORY_API_RESPONSE );
@@ -77,19 +80,20 @@ describe( 'TermActions', function() {
 		sandbox.stub( Dispatcher, 'handleViewAction' );
 	} );
 
+	afterEach( function() {
+		this.revertTermActions();
+		sandbox.restore();
+	} );
+
 	after( function() {
 		mockery.deregisterAll();
 		mockery.disable();
 	} );
 
-	afterEach( function() {
-		sandbox.restore();
-	} );
-
 	describe( '#addCategory', function() {
 		it( 'should call handleViewAction with proper data', function() {
 			TermActions.addCategory( TEST_SITE_ID, TEST_CATEGORY_NAME );
-			assert.calledWith( Dispatcher.handleViewAction, {
+			expect( Dispatcher.handleViewAction ).to.have.been.calledWith( {
 				type: ActionTypes.CREATE_TERM,
 				siteId: TEST_SITE_ID,
 				data: {
