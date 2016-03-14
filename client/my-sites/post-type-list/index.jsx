@@ -12,13 +12,13 @@ import { getSelectedSite } from 'state/ui/selectors';
 import { getSitePostsForQueryIgnoringPage } from 'state/posts/selectors';
 import PostTypePost from './post';
 
-function PostType( { type, siteId, posts } ) {
+function PostTypeList( { type, siteId, posts } ) {
 	return (
-		<div className="post-type">
+		<div className="post-type-list">
 			<QueryPosts
 				siteId={ siteId }
 				query={ { type } } />
-			<ul className="post-type__posts">
+			<ul className="post-type-list__posts">
 				{ posts && posts.map( ( post ) => (
 					<li key={ post.global_ID }>
 						<PostTypePost globalId={ post.global_ID } />
@@ -29,7 +29,7 @@ function PostType( { type, siteId, posts } ) {
 	);
 }
 
-PostType.propTypes = {
+PostTypeList.propTypes = {
 	type: PropTypes.string.isRequired,
 	siteId: PropTypes.number,
 	posts: PropTypes.array
@@ -44,4 +44,4 @@ export default connect( ( state, ownProps ) => {
 		siteId,
 		posts: getSitePostsForQueryIgnoringPage( state, siteId, { type } )
 	};
-} )( PostType );
+} )( PostTypeList );

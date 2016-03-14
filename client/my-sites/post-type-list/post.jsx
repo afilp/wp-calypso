@@ -12,7 +12,7 @@ import Card from 'components/card';
 
 function PostTypePost( { post } ) {
 	return (
-		<Card compact className="post-type__post">
+		<Card compact className="post-type-list__post">
 			{ post.title }
 		</Card>
 	);
