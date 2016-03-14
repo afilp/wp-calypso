@@ -76,6 +76,45 @@ const PlanStatus = React.createClass( {
 		);
 	},
 
+	getPrices() {
+		const { formattedPrice, rawDiscount, rawPrice } = this.props.plan,
+			rawOriginalPrice = rawPrice + rawDiscount;
+
+		return {
+			original: formattedPrice.replace( rawPrice, rawOriginalPrice ),
+			new: formattedPrice
+		};
+	},
+
+	renderNudge() {
+		const { rawDiscount: hasDiscount } = this.props.plan,
+			day = getDaysUntilUserFacingExpiry( this.props.plan );
+
+		if ( hasDiscount && ( day < 6 && day > 0 ) ) {
+			const prices = this.getPrices();
+
+			return (
+				<div className="plan-status__nudge">
+					{ this.translate(
+						'{{del}}%(originalPrice)s{{/del}} {{strong}}%(newPrice)s{{/strong}} - {{em}}Save when you combine your domain and plan{{/em}}',
+						{
+							args: {
+								originalPrice: prices.original,
+								newPrice: prices.new
+							},
+							components: {
+								del: <del />,
+								em: <em />,
+								strong: <strong />
+							},
+							context: "Discount shown on the Plan Overview page"
+						}
+					) }
+				</div>
+			);
+		}
+	},
+
 	render() {
 		const { plan } = this.props,
 			iconClasses = classNames( 'plan-status__icon', {
@@ -103,6 +142,9 @@ const PlanStatus = React.createClass( {
 								} )
 							}
 						</h1>
+
+						{ this.renderNudge() }
+
 						{ this.renderNotice() }
 					</div>
 
